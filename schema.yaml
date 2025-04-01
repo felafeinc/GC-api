@@ -2,14 +2,12 @@ openapi: 3.0.0
 info:
   title: GreenCigar API
   version: 1.0.0
-  description: Retrieves order status based on unique code
 servers:
   - url: https://greencigar.bg/api/v1
 paths:
   /order/info:
     post:
-      summary: Retrieve order status by unique code
-      operationId: findOrderByCode
+      summary: Get order details
       requestBody:
         required: true
         content:
@@ -19,44 +17,175 @@ paths:
               properties:
                 code:
                   type: string
-                  example: "6596E8B189"
-                  description: Unique order code
-              required:
-                - code
+                  description: Order unique number (either code or Id required)
+                Id:
+                  type: integer
+                  description: Order ID (either code or Id required)
+              anyOf:
+                - required: [code]
+                - required: [Id]
       responses:
         '200':
-          description: Order found
+          description: Successful response
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  Id:
+                    type: string
                   uniqueNumber:
                     type: string
-                    example: "6596E8B189"
+                  orderDate:
+                    type: string
+                    format: date-time
+                  shipmentCost:
+                    type: string
+                  total:
+                    type: string
+                  sh_name:
+                    type: string
+                  paid:
+                    type: string
+                    enum: ["0", "1"]
                   statusTxt:
                     type: string
-                    example: "Завършена"
-                    description: Human-readable order status
-                required:
-                  - uniqueNumber
-                  - statusTxt
+                  loadingNum:
+                    type: string
+                    description: Loading number for that order
+                  statusID:
+                    type: number
+                    description: Status ID. Existing in /order/statusesList status ID
+        '401':
+          description: Unauthorized
         '400':
           description: Bad Request
+  /order/statusesList:
+    post:
+      summary: List of all possible order statuses
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties: {}
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    Id:
+                      type: number
+                    status:
+                      type: string
+        '401':
+          description: Unauthorized
+        '400':
+          description: Bad Request
+  /order/shippingMethodsList:
+    post:
+      summary: List shipping methods
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                zoneId:
+                  type: number
+                  description: The ID of the zone
+              required:
+                - zoneId
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    Id:
+                      type: string
+                    zoneId:
+                      type: string
+                    name:
+                      type: string
+                    calcMethod:
+                      type: string
+        '401':
+          description: Unauthorized
+  /product/info:
+    post:
+      summary: Get information about product
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                Id:
+                  type: number
+                  description: Product's unique ID
+              required:
+                - Id
+      responses:
+        '200':
+          description: Successful response
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
+                  Id:
                     type: string
-                  code:
+                  parentId:
+                    type: number
+                  name:
                     type: string
-                  messages:
+                  price:
                     type: string
-                example:
-                  error: "Bad Request"
-                  code: "400"
-                  messages: "Bad syntax or generic error"
         '401':
           description: Unauthorized
+        '400':
+          description: Bad Request
+  /product/infoVariants:
+    post:
+      summary: Get information about product with all variants
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                Id:
+                  type: number
+                  description: Product's unique ID
+              required:
+                - Id
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  variantInfo:
+                    type: array
+                    items:
+                      type: object
+                      description: Detailed information about product's variant
+        '401':
+          description: Unauthorized
+        '400':
+          description: Bad Request
