@@ -1,5 +1,12 @@
-/order/test:
-  post:
+openapi: 3.0.0
+info:
+  title: GreenCigar API
+  version: 1.0.0
+servers:
+  - url: https://greencigar.bg/api/v1
+paths:
+  /order/info:
+post:
     summary: Test endpoint
     operationId: testAccess
     requestBody:
