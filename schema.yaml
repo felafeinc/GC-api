@@ -1,62 +1,27 @@
-openapi: 3.0.0
-info:
-  version: 1.0.0
-  title: GreenCigar Order API
-  description: Retrieves order status based on unique code
-servers:
-  - url: https://greencigar.bg/api/v1
-paths:
-  /order/info:
-    post:
-      summary: Retrieve order status by unique code
-      operationId: findOrderByCode
-      requestBody:
-        required: true
+/order/test:
+  post:
+    summary: Test endpoint
+    operationId: testAccess
+    requestBody:
+      required: true
+      content:
+        application/x-www-form-urlencoded:
+          schema:
+            type: object
+            properties:
+              code:
+                type: string
+                example: "6596E8B189"
+            required:
+              - code
+    responses:
+      '200':
+        description: Test response
         content:
-          application/x-www-form-urlencoded:
+          application/json:
             schema:
               type: object
               properties:
-                code:
+                message:
                   type: string
-                  example: "6596E8B189"
-                  description: Unique order code
-              required:
-                - code
-      responses:
-        '200':
-          description: Order found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  uniqueNumber:
-                    type: string
-                    example: "6596E8B189"
-                  statusTxt:
-                    type: string
-                    example: "Завършена"
-                    description: Human-readable order status
-                required:
-                  - uniqueNumber
-                  - statusTxt
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                  code:
-                    type: string
-                  messages:
-                    type: string
-                example:
-                  error: "Bad Request"
-                  code: "400"
-                  messages: "Bad syntax or generic error"
-        '401':
-          description: Unauthorized
+                  example: "Test successful"
