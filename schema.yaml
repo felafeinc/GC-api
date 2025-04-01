@@ -17,10 +17,10 @@ paths:
               properties:
                 code:
                   type: string
-                  description: Order unique number (either code or Id required)
+                  description: Order unique number (e.g., 6596E8B189)
                 Id:
-                  type: integer
-                  description: Order ID (either code or Id required)
+                  type: string
+                  description: Order ID (e.g., 0056803)
               anyOf:
                 - required: [code]
                 - required: [Id]
@@ -34,34 +34,42 @@ paths:
                 properties:
                   Id:
                     type: string
+                    example: "0056803"
                   uniqueNumber:
                     type: string
+                    example: "6596E8B189"
                   orderDate:
                     type: string
                     format: date-time
+                    example: "2025-04-01 10:32:08"
                   shipmentCost:
                     type: string
+                    example: "0.00"
                   total:
                     type: string
+                    example: "133.41"
                   sh_name:
                     type: string
+                    example: "Peter"
                   paid:
                     type: string
                     enum: ["0", "1"]
+                    example: "1"
                   status:
                     type: string
-                    description: Alias for statusTxt
+                    example: "12"
+                    description: Numeric status ID
                   statusTxt:
                     type: string
-                    description: The order status name (e.g., "Потвърдена")
-                  loadingNum:
+                    example: "Завършена"
+                    description: Human-readable order status
+                  shippingName:
                     type: string
-                    description: Loading number for that order
-                  statusID:
-                    type: number
-                    description: Status ID. Existing in /order/statusesList status ID
+                    example: "Доставка до адрес със Спиди "
                 required:
-                  - statusTxt  # Ensures Tawk.to knows this is the key field
+                  - Id
+                  - uniqueNumber
+                  - statusTxt
         '401':
           description: Unauthorized
         '400':
