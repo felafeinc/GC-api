@@ -20,15 +20,15 @@ paths:
                 code:
                   type: string
                   example: "6596E8B189"
-                  description: Unique order code
+                  description: Unique order code from user input
                 user:
                   type: string
-                  example: "greenai@greencigar.bg"
-                  description: API username
+                  default: "tawkto@greencigar.bg"
+                  description: Fixed API username
                 pass:
                   type: string
-                  example: "123qwe"
-                  description: API password
+                  default: "[your-password]"  # Replace with your actual password
+                  description: Fixed API password
               required:
                 - code
                 - user
