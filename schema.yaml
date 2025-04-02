@@ -2,33 +2,37 @@ openapi: 3.0.0
 info:
   title: GreenCigar API
   version: 1.0.0
-  description: Test order status retrieval
+  description: Test order status retrieval with hardcoded credentials
 servers:
   - url: https://greencigar.bg/api/v1
 paths:
-/order/info:
-  post:
+  /order/info:
+    post:
       summary: Get order status
       operationId: findOrderByCode
-    requestBody:
-      content:
-        application/x-www-form-urlencoded:
-          schema:
-            properties:
-              code:
-                type: string
-                example: "6596E8B189"
-              user:
-                type: string
-                example: "tawkto@greencigar.bg"
-              pass:
-                type: string
-                example: "[your-password]"
-            required:
-              - code
-              - user
-              - pass
-    security: []  # Remove basicAuth
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+                  example: "6596E8B189"
+                  description: Unique order code
+                user:
+                  type: string
+                  example: "greenai@greencigar.bg"
+                  description: API username
+                pass:
+                  type: string
+                  example: "123qwe"
+                  description: API password
+              required:
+                - code
+                - user
+                - pass
       responses:
         '200':
           description: OK
@@ -40,8 +44,22 @@ paths:
                   statusTxt:
                     type: string
                     example: "Завършена"
-components:
-  securitySchemes:
-    basicAuth:
-      type: http
-      scheme: basic
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  code:
+                    type: string
+                  messages:
+                    type: string
+                example:
+                  error: "Bad Request"
+                  code: "400"
+                  messages: "Bad syntax or generic error"
+        '401':
+          description: Unauthorized
