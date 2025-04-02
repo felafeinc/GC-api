@@ -1,130 +1,118 @@
 openapi: 3.0.0
 info:
-  title: Greencigar API
-  description: API schema for Greencigar
+  title: GreenCigar API
+  description: API schema for retrieving order details by code and product information.
   version: 1.0.0
 servers:
   - url: https://www.greencigar.bg/api/v1
     description: Production server
 paths:
-  /orders:
-    get:
-      summary: Retrieve a list of orders
-      description: Fetches a list of orders with optional filters.
-      parameters:
-        - in: query
-          name: status
-          schema:
-            type: string
-          description: Filter orders by status.
-        - in: query
-          name: customer_id
-          schema:
-            type: integer
-          description: Filter orders by customer ID.
-      security:
-        - BasicAuth: []  # Ensures Basic Auth is used
-      responses:
-        '200':
-          description: A list of orders.
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Order'
-        '401':
-          description: Unauthorized. Invalid username or password.
+  /order/info:
     post:
-      summary: Create a new order
-      description: Submits a new order to the system.
+      summary: Get order details by code
+      description: Retrieve information about an order using the unique order code.
       security:
         - BasicAuth: []
       requestBody:
         required: true
         content:
-          application/json:
+          application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/NewOrder'
-      responses:
-        '201':
-          description: Order created successfully.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Order'
-        '400':
-          description: Bad request. Invalid input parameters.
-        '401':
-          description: Unauthorized. Invalid username or password.
-  /orders/{order_id}:
-    get:
-      summary: Retrieve a specific order
-      description: Fetches details of a specific order by its ID.
-      security:
-        - BasicAuth: []
-      parameters:
-        - in: path
-          name: order_id
-          required: true
-          schema:
-            type: integer
-          description: The ID of the order to retrieve.
+              type: object
+              properties:
+                code:
+                  type: string
+                  description: The unique order code.
+              required:
+                - code
       responses:
         '200':
-          description: Order details retrieved successfully.
+          description: Successful response with order details.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Order'
-        '404':
-          description: Order not found.
+                type: object
+                properties:
+                  Id:
+                    type: string
+                    description: Internal ID of the order.
+                  uniqueNumber:
+                    type: string
+                    description: The unique order code.
+                  orderDate:
+                    type: string
+                    format: date-time
+                    description: Date when the order was placed.
+                  shipmentCost:
+                    type: string
+                    description: Shipping cost.
+                  total:
+                    type: string
+                    description: Total cost of the order.
+                  sh_name:
+                    type: string
+                    description: Shipping method name.
+                  paid:
+                    type: string
+                    enum: ["0", "1"]
+                    description: Payment status (0 = unpaid, 1 = paid).
+                  statusTxt:
+                    type: string
+                    description: Status description of the order.
+                  loadingNum:
+                    type: string
+                    description: Loading number for tracking.
+                  statusID:
+                    type: number
+                    description: Status ID (matches /order/statusesList).
+        '400':
+          description: Bad Request - Invalid or missing order code.
         '401':
-          description: Unauthorized. Invalid username or password.
+          description: Unauthorized - Invalid credentials.
+  /product/info:
+    post:
+      summary: Get product details
+      description: Retrieve information about a specific product.
+      security:
+        - BasicAuth: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                Id:
+                  type: number
+                  description: The unique product ID.
+              required:
+                - Id
+      responses:
+        '200':
+          description: Successful response with product details.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Id:
+                    type: string
+                    description: Product unique identifier.
+                  parentId:
+                    type: number
+                    description: Parent category ID.
+                  name:
+                    type: string
+                    description: Product name.
+                  price:
+                    type: string
+                    description: Product price.
+        '400':
+          description: Bad Request - Invalid or missing product ID.
+        '401':
+          description: Unauthorized - Invalid credentials.
 components:
   securitySchemes:
     BasicAuth:
       type: http
       scheme: basic
-  schemas:
-    Order:
-      type: object
-      properties:
-        id:
-          type: integer
-          description: Unique identifier for the order.
-        customer_id:
-          type: integer
-          description: ID of the customer who placed the order.
-        status:
-          type: string
-          description: Current status of the order.
-        total_amount:
-          type: number
-          format: float
-          description: Total amount for the order.
-        created_at:
-          type: string
-          format: date-time
-          description: Timestamp when the order was created.
-    NewOrder:
-      type: object
-      properties:
-        customer_id:
-          type: integer
-          description: ID of the customer placing the order.
-        items:
-          type: array
-          items:
-            type: object
-            properties:
-              product_id:
-                type: integer
-              quantity:
-                type: integer
-              price:
-                type: number
-                format: float
-        shipping_address:
-          type: string
-          description: Shipping address for the order.
