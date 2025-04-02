@@ -23,11 +23,11 @@ paths:
                   description: Unique order code from user input
                 user:
                   type: string
-                  default: "tawkto@greencigar.bg"
+                  default: "greenai@greencigar.bg"
                   description: Fixed API username
                 pass:
                   type: string
-                  default: "[your-password]"  # Replace with your actual password
+                  default: "123qwe"
                   description: Fixed API password
               required:
                 - code
