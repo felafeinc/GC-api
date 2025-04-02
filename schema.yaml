@@ -1,6 +1,15 @@
+openapi: 3.0.0
+info:
+  title: GreenCigar API
+  version: 1.0.0
+  description: Test order status retrieval
+servers:
+  - url: https://greencigar.bg/api/v1
+paths:
 /order/info:
   post:
-    ...
+      summary: Get order status
+      operationId: findOrderByCode
     requestBody:
       content:
         application/x-www-form-urlencoded:
@@ -11,12 +20,28 @@
                 example: "6596E8B189"
               user:
                 type: string
-                example: "greenai@greencigar.bg"
+                example: "tawkto@greencigar.bg"
               pass:
                 type: string
-                example: "123qwe"
+                example: "[your-password]"
             required:
               - code
               - user
               - pass
     security: []  # Remove basicAuth
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  statusTxt:
+                    type: string
+                    example: "Завършена"
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
